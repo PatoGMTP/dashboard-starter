@@ -19,6 +19,12 @@ await todo.loadActiveTasks();
 await todo.loadHistoricTasks();
 console.log(todo.active_tasks, todo.historic_tasks);
 
+// reference.makeNewNote("Test", "TEXT!");
+await reference.loadNotes();
+console.log(reference.list);
+// reference.editNote(reference.list[0].id, "New", "New");
+// reference.deleteNote(reference.list[0].id);
+
 // let temp = todo.active_tasks;
 // todo.completeTask(temp[0].id);
 

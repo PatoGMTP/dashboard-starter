@@ -149,9 +149,9 @@ class Todo
 
         let query = {}
         query.table = this.tablename;
-        query.record = target;
+        query.id = target.id;
 
-        let resp = await this.db.update.post("", query);
+        let resp = await this.db.delete.post("", query);
 
         this.active_tasks = this.active_tasks.filter(item=> item !== target);
     }
