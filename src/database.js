@@ -38,10 +38,10 @@ class Database
         return this.getCustomInstance("Delete");
     }
 
-    getDropTableAPI = () =>
-    {
-        return this.getCustomInstance("DropTable");
-    }
+    // getDropTableAPI = () =>
+    // {
+    //     return this.getCustomInstance("DropTable");
+    // }
 
     getReadAPI = () =>
     {

@@ -2,11 +2,11 @@ import MyDB from './database.js';
 
 class Reference
 {
-    db = MyDB.getStandardAPIs();
+    db;
 
     constructor()
     {
-
+        this.db = MyDB.getStandardAPIs();
     }
 }
 
