@@ -2,11 +2,20 @@ import MyDB from './database.js';
 
 class Deals
 {
-    db = MyDB.getStandardAPIs();
+    db;
+
+    CheapShark_BaseURL;
+    axios_CheapShark;
 
     constructor()
     {
+        this.db = MyDB.getStandardAPIs();
 
+        this.CheapShark_BaseURL = "https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=15";
+
+        this.axios_CheapShark = axios.create({
+            baseURL: this.CheapShark_BaseURL
+        });
     }
 }
 

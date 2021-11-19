@@ -5,6 +5,13 @@ import Deals from './src/deals.js';
 import Crypto from './src/crypto.js';
 import Reference from './src/reference.js';
 
+const todo = new Todo();
+const deals = new Deals();
+const crypto = new Crypto();
+const reference = new Reference();
+
+console.log(todo, deals, crypto, reference);
+
 let countdown = new Countdown(1,2);
 countdown.render();
 
@@ -14,20 +21,20 @@ gifpane.render();
 
 // Big anime source
 
-let AniAPI_Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxOSIsIm5iZiI6MTYzNzI3NDg3NCwiZXhwIjoxNjM5ODY2ODc0LCJpYXQiOjE2MzcyNzQ4NzR9.JVK1tJkEmhFttmGhXoi3gR5lUspLnRB0dfw0U1ibIy4";
-let AniAPI_BaseURL = "https://api.aniapi.com/v1/";
+// let AniAPI_Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxOSIsIm5iZiI6MTYzNzI3NDg3NCwiZXhwIjoxNjM5ODY2ODc0LCJpYXQiOjE2MzcyNzQ4NzR9.JVK1tJkEmhFttmGhXoi3gR5lUspLnRB0dfw0U1ibIy4";
+// let AniAPI_BaseURL = "https://api.aniapi.com/v1/";
 
-const axios_AniAPI = axios.create({
-    baseURL: AniAPI_BaseURL,
-    headers: {
-        'Content-Type' : 'Application/json',
-        'Authorization': `Bearer ${AniAPI_Token}`,
-        'Accept': 'application/json'
-    }
-});
+// const axios_AniAPI = axios.create({
+//     baseURL: AniAPI_BaseURL,
+//     headers: {
+//         'Content-Type' : 'Application/json',
+//         'Authorization': `Bearer ${AniAPI_Token}`,
+//         'Accept': 'application/json'
+//     }
+// });
 
-let thing = await axios_AniAPI("anime");
-console.log(thing.data);
+// let thing = await axios_AniAPI("anime");
+// console.log(thing.data);
 
 
 // Crypto
@@ -45,23 +52,23 @@ console.log(thing.data);
 
 // Cheap Deals
 
-let CheapShark_BaseURL = "https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=15";
+// let CheapShark_BaseURL = "https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=15";
 
-const axios_CheapShark = axios.create({
-    baseURL: CheapShark_BaseURL
-});
+// const axios_CheapShark = axios.create({
+//     baseURL: CheapShark_BaseURL
+// });
 
-let results = await axios_CheapShark();
-console.log(results.data);
+// let results = await axios_CheapShark();
+// console.log(results.data);
 
 
 // Anime quotes
 
-let AnimeChan_BaseURL = "https://animechan.vercel.app/api/quotes/";
+// let AnimeChan_BaseURL = "https://animechan.vercel.app/api/quotes/";
 
-const axios_AnimeChan = axios.create({
-    baseURL: AnimeChan_BaseURL
-});
+// const axios_AnimeChan = axios.create({
+//     baseURL: AnimeChan_BaseURL
+// });
 
-let something = await axios_AnimeChan("anime?title=madoka");
-console.log(something.data);
+// let something = await axios_AnimeChan("anime?title=madoka");
+// console.log(something.data);
