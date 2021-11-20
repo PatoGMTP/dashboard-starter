@@ -12,7 +12,7 @@ class Task
     {
         if (typeof(input) === "string")
         {
-            this.text = text;
+            this.text = input;
             this.status = 0;
             this.date_created = new Date();
             this.date_edited = new Date();
@@ -80,7 +80,7 @@ class Todo
         }
     }
 
-    makeNewTask = async (text) =>
+    makeNewTask = async(text) =>
     {
         let query = {};
 
