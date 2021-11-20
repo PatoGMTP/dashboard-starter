@@ -67,6 +67,7 @@ class Todo
         {
             let query = {};
             query.table = this.tablename;
+            query.orderBy = "date_created";
             let resp =  await this.db.read.post("", query);
 
             for (let item of resp.data.records)
@@ -100,6 +101,7 @@ class Todo
     {
         let query = {};
         query.table = this.tablename;
+        query.orderBy = "date_created";
         query.query = "status == 0";
 
         let resp = await this.db.read.post("", query);
@@ -110,6 +112,7 @@ class Todo
     {
         let query = {};
         query.table = this.tablename;
+        query.orderBy = "date_created";
         query.query = "status != 0";
 
         let resp = await this.db.read.post("", query);

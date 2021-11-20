@@ -42,20 +42,54 @@ class Crypto
         query.table = this.tablename;
 
         let resp = await this.db.read.post("", query);
-        console.log(resp);
+        
+        this.previous = resp.data.records.find(item => item.id == "1");
+        this.next = resp.data.records.find(item => item.id == "2");
+        this.previous.date = new Date(this.previous.date);
+        this.next.date = new Date(this.next.date);
+
+        let now = new Date();
+
+        if (now.getTime() - this.previous.date.getTime() > this.millis_per_day)
+        {
+            console.log("Hello there!");
+        }
     }
 
     firstTimeSetup = async() =>
     {
-        let first = {};
-        first.date = new Date();
-        first.priceUSD = this.current;
-        first.id = 1
-        
-        let second = {};
-        second.date = new Date();
-        second.priceUSD = this.current;
-        second.id = 2
+        let query = {};
+        query.table = this.tablename;
+        let resp = await this.db.read.post("", query);
+
+        if (resp.data.records.length === 0)
+        {
+            let first = {};
+            first.date = new Date();
+            first.priceUSD = this.current;
+            first.id = "1";
+
+            query.record = first;
+
+            resp = await this.db.create.post("", query);
+
+            console.log(resp);
+            
+            let second = {};
+            second.date = new Date();
+            second.priceUSD = this.current;
+            second.id = "2";
+
+            query.record = second;
+
+            resp = await this.db.create.post("", query);
+
+            console.log(resp);
+        }
+        else
+        {
+            console.log("Data already initialized!");
+        }
     }
 }
 

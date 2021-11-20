@@ -42,6 +42,7 @@ while (resp === null)
     }
 }
 
+await crypto.firstTimeSetup();
 crypto.getPrevious();
 
 // let temp = todo.active_tasks;

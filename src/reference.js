@@ -56,6 +56,7 @@ class Reference
     {
         let query = {};
         query.table = this.tablename;
+        query.orderBy = "title";
 
         let resp = await this.db.read.post("", query);
         this.list = resp.data.records.map(item=> new Note(item));
