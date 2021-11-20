@@ -1,5 +1,26 @@
 import MyDB from './database.js';
 
+class Log
+{
+    date;
+    priceUSD;
+    id;
+
+    constructor (input)
+    {
+        if (Array.isArray(input))
+        {
+            this.date = input[0];
+            this.priceUSD = input[1];
+            this.id = input[2];
+        }
+        else
+        {
+            Object.assign(this, input);
+        }
+    }
+}
+
 class Crypto
 {
     db;
@@ -50,9 +71,29 @@ class Crypto
 
         let now = new Date();
 
-        if (now.getTime() - this.previous.date.getTime() > this.millis_per_day)
+        if (now.getTime() - this.next.date.getTime() > (this.millis_per_day / 24 / 60 / 4))
         {
-            console.log("Hello there!");
+            this.previous.date = this.next.date;
+            this.previous.priceUSD = this.next.priceUSD;
+
+            this.next.date = now;
+            this.next.priceUSD = this.current;
+
+            let query = {};
+            query.table = this.tablename;
+            query.record = this.previous;
+
+            let resp = await this.db.update.post("", query);
+            console.log("Previous has been updated:", resp);
+
+            query.record = this.next;
+
+            resp = await this.db.update.post("", query);
+            console.log("Next has been updated:", resp);
+        }
+        else
+        {
+            // It's been less than X time since I last logged on and had crypto updated, so nothing changes
         }
     }
 

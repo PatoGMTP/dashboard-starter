@@ -28,19 +28,26 @@ console.log(reference.list);
 // reference.deleteNote(reference.list[0].id);
 
 let resp = null;
-
+let count = 0;
 while (resp === null)
 {
+    if (count > 10)
+    {
+        console.log("Serious API Error!");
+        resp = undefined;
+    }
     try
     {
         resp = await crypto.getCurrent();
     }
     catch (error)
     {
-        console.log("API failed, retrying soon...");
-        setTimeout(console.log("trying now..."), 1000);
+        count++;
+        console.log("API failed, retrying");
+        // setTimeout(console.log("trying now..."), 1000);
     }
 }
+console.log("Number of times crypto API failed:", count);
 
 await crypto.firstTimeSetup();
 crypto.getPrevious();

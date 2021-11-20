@@ -1,5 +1,24 @@
 import MyDB from './database.js';
 
+class Anime
+{
+    title;
+    id;
+
+    constructor (input)
+    {
+        if (Array.isArray(input))
+        {
+            this.title = input[0];
+            this.id = input[1];
+        }
+        else
+        {
+            Object.assign(this, input);
+        }
+    }
+}
+
 class Sidebar
 {
     db;
