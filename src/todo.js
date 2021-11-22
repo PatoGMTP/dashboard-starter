@@ -168,53 +168,91 @@ class Todo
         this.active_tasks = this.active_tasks.filter(item=> item !== target);
     }
 
-    displayActiveTasks(target)
+    displayActiveTasks()
     {
         this.home = false;
+        
 
-        let ol = target.querySelector("ol");
-
-        if (ol)
+        this.content_element.innerHTML = "";
+        
+        if (this.list.innerHTML === "")
         {
-            ol.innerHTML = "";
+            for (let item of this.active_tasks)
+            {
+                this.list.appendChild(this.displayTask(item));
+            }
         }
         else
         {
-            target.innerHTML = "";
-            ol = document.createElement("ol");
-            ol.type = "1";
-            target.appendChild(ol)
+            console.log("Reusing content!");
         }
         
-        for (let item of this.active_tasks)
-        {
-            let li = document.createElement("li");
+        this.content_element.appendChild(this.list)
+    }
 
-            let left_button = document.createElement("button");
-            left_button.innerHTML = "Done";
-            left_button.style.display = "inline";
-            
-            let task_text = document.createElement("p");
-            task_text.innerHTML = item.text;
-            task_text.style.display = "inline";
-            
-            let right_button = document.createElement("button");
-            right_button.innerHTML = "Edit";
-            right_button.style.display = "inline";
+    displayTask(item)
+    {
+        let li = document.createElement("li");
 
-            let holder = document.createElement("div");
+        let left_button = document.createElement("button");
+        left_button.innerHTML = "Done";
+        left_button.style.display = "inline";
 
-            holder.appendChild(left_button);
-            holder.appendChild(task_text);
-            holder.appendChild(right_button);
+        left_button.addEventListener("click", evt => {
+            if (evt.target.innerHTML === "Done")
+            {
+                console.log("Done!");
+            }
+            else if (evt.target.innerHTML === "Save")
+            {
+                console.log("Save!");
+                let parent = evt.target.parentElement;
+                parent.children[0].innerHTML = "Done";
+                parent.children[1].readOnly = true;
+                parent.children[2].innerHTML = "Edit";
 
-            li.appendChild(holder);
+                this.editTask(parent.id, parent.children[1].value)
+            }
+        });
+        
+        let task_text = document.createElement("input");
+        task_text.value = item.text;
+        task_text.readOnly = true;
+        task_text.style.display = "inline";
+        
+        let right_button = document.createElement("button");
+        right_button.innerHTML = "Edit";
+        right_button.style.display = "inline";
 
-            li.id = item.id;
+        right_button.addEventListener("click", evt => {
+            if (evt.target.innerHTML === "Edit")
+            {
+                let parent = evt.target.parentElement;
+                parent.children[0].innerHTML = "Save";
+                parent.children[1].readOnly = false;
+                parent.children[2].innerHTML = "Delete";
+            }
+            else if (evt.target.innerHTML === "Delete")
+            {
+                let parent = evt.target.parentElement;
+                // console.log("Delete!", evt.target.previousElementSibling.value);
+                this.deleteTask(parent.id);
+                this.list.removeChild(parent.parentElement);
+            }
+        });
 
-            ol.appendChild(li);
-        }
+        let holder = document.createElement("div");
+        holder.id = item.id;
 
+        holder.appendChild(left_button);
+        holder.appendChild(task_text);
+        holder.appendChild(right_button);
+
+        li.appendChild(holder);
+
+        li.id = item.id;
+
+        return li;
     }
 
     displayStart()
@@ -230,6 +268,18 @@ class Todo
         this.initializeHome();
 
         this.content_element.appendChild(this.button_display);
+
+        this.initializeList();
+    }
+
+    initializeList()
+    {
+        if (!this.list)
+        {
+            let list = document.createElement("ol");
+            list.type = "1";
+            this.list = list;
+        }
     }
 
     initializeHome()
@@ -257,9 +307,19 @@ class Todo
                 if (!this.home) this.displayStart();
                 else console.log("Unfocus!");
             });
+
+            let button_new_task = document.createElement("button");
+            button_new_task.innerHTML = "New Task";
+            button_new_task.classList.add("newtask");
+            button_new_task.addEventListener("click", evt =>{
+                this.makeNewTask("").then(resp =>{
+                    this.list.appendChild(this.displayTask(this.active_tasks.slice(-1)[0]));
+                });
+            });
     
             // this.parent_element.appendChild(title);
             this.buttons_element.appendChild(button_exit);
+            this.buttons_element.appendChild(button_new_task);
         }
         else
         {

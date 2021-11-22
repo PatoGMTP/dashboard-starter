@@ -132,6 +132,7 @@ class Reference
         this.form_title.readOnly = false;
         this.form_body.readOnly = false;
         this.form_submit.hidden = false;
+        this.form_submit.value = "Create!";
         this.form_delete.hidden = true;
 
         this.content_element.appendChild(this.form);
