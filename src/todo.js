@@ -53,11 +53,20 @@ class Todo
 
     tablename = "todo";
 
-    constructor()
+    parent_element;
+    title_element;
+    buttons_element;
+    content_element;
+
+    constructor(parent)
     {
         this.db = MyDB.getStandardAPIs();
         this.active_tasks = [];
         this.historic_tasks = [];
+        this.parent_element = parent;
+        this.title_element = this.parent_element.querySelector(".title")
+        this.buttons_element = this.parent_element.querySelector(".buttons")
+        this.content_element = this.parent_element.querySelector(".content")
     }
 
     checkRecords = async () =>
@@ -157,6 +166,77 @@ class Todo
         let resp = await this.db.delete.post("", query);
 
         this.active_tasks = this.active_tasks.filter(item=> item !== target);
+    }
+
+    displayActiveTasks(target)
+    {
+        this.home = false;
+        
+        let ol = target.querySelector("ol");
+
+        if (ol)
+        {
+            ol.innerHTML = "";
+        }
+        else
+        {
+            target.innerHTML = "";
+            ol = document.createElement("ol");
+            ol.type = "1";
+            target.appendChild(ol)
+        }
+
+        let li;
+        for (let item of this.active_tasks)
+        {
+            li = document.createElement("li");
+            li.innerHTML = item.text;
+            li.id = item.id;
+
+            ol.appendChild(li);
+        }
+
+    }
+
+    displayStart()
+    {
+        this.home = true;
+
+        this.initializeButtons();
+
+        this.title_element.innerHTML = "Todo";
+
+        this.content_element.innerHTML = "";
+
+        let button_display = document.createElement("button");
+        button_display.innerHTML = "Todo List";
+        button_display.classList.add("showlist");
+        button_display.addEventListener("click", evt =>{
+            this.displayActiveTasks(this.content_element);
+        });
+
+        this.content_element.appendChild(button_display);
+    }
+
+    initializeButtons()
+    {
+        if (this.buttons_element.innerHTML === "")
+        {
+            let button_exit = document.createElement("button");
+            button_exit.innerHTML = "Exit";
+            button_exit.classList.add("exit");
+            button_exit.addEventListener("click", evt =>{
+                if (!this.home) this.displayStart();
+                else console.log("Unfocus!");
+            });
+    
+            // this.parent_element.appendChild(title);
+            this.buttons_element.appendChild(button_exit);
+        }
+        else
+        {
+            console.log("Buttons are good!");
+        }
     }
 }
 

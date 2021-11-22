@@ -5,12 +5,23 @@ import Deals from './src/deals.js';
 import Crypto from './src/crypto.js';
 import Reference from './src/reference.js';
 
+// let countdown = new Countdown(1,2);
+// countdown.render();
+
+// let gifpane = new Giphy();
+// gifpane.render();
+
 // var date = new Date(unixTimestamp*1000);
 
-const todo = new Todo();
-const deals = new Deals();
-const crypto = new Crypto();
-const reference = new Reference();
+let todo_div = document.querySelector(".todo");
+let crypto_div = document.querySelector(".crypto");
+let reference_div = document.querySelector(".reference");
+let deals_div = document.querySelector(".deals");
+
+const todo = new Todo(todo_div);
+const deals = new Deals(deals_div);
+const crypto = new Crypto(crypto_div);
+const reference = new Reference(reference_div);
 
 console.log(todo, deals, crypto, reference);
 
@@ -20,12 +31,15 @@ await todo.loadActiveTasks();
 await todo.loadHistoricTasks();
 // await todo.editTask(todo.active_tasks[0].id, "Bye!");
 console.log(todo.active_tasks, todo.historic_tasks);
+// todo.displayActiveTasks(todo_div);
+todo.displayStart();
 
 // await reference.makeNewNote("Test", "TEXT!");
 await reference.loadNotes();
 console.log(reference.list);
 // reference.editNote(reference.list[0].id, "test2", "New");
 // reference.deleteNote(reference.list[0].id);
+reference.displayStart();
 
 let resp = null;
 let count = 0;
@@ -51,12 +65,11 @@ console.log("Number of times crypto API failed:", count);
 
 await crypto.firstTimeSetup();
 crypto.getPrevious();
+crypto.displayStart();
 
 // let temp = todo.active_tasks;
 // todo.completeTask(temp[0].id);
 
-let countdown = new Countdown(1,2);
-countdown.render();
-
-let gifpane = new Giphy();
-gifpane.render();
+await deals.getBestDeals();
+await deals.searchDeals("hades");
+deals.displayStart();

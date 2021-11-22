@@ -30,13 +30,19 @@ class Crypto
     axios_CoinCap;
 
     millis_per_day = 86400000;
+    refresh_rate;
     tablename = "crypto";
 
     current;
     previous;
     next;
 
-    constructor()
+    parent_element;
+    title_element;
+    buttons_element;
+    content_element;
+
+    constructor(parent)
     {
         this.db = MyDB.getStandardAPIs();
 
@@ -46,6 +52,13 @@ class Crypto
         this.axios_CoinCap = axios.create({
             baseURL: this.CoinCapAPI_BaseURL
         });
+
+        this.refresh_rate = this.millis_per_day;
+
+        this.parent_element = parent;
+        this.title_element = this.parent_element.querySelector(".title")
+        this.buttons_element = this.parent_element.querySelector(".buttons")
+        this.content_element = this.parent_element.querySelector(".content")
     }
 
     getCurrent = async() =>
@@ -71,7 +84,10 @@ class Crypto
 
         let now = new Date();
 
-        if (now.getTime() - this.next.date.getTime() > (this.millis_per_day / 24 / 60 / 4))
+        // TODO: CHANGE THIS LATER
+        this.refresh_rate = this.refresh_rate / 24 / 60 / 4;
+
+        if (now.getTime() - this.next.date.getTime() > this.refresh_rate)
         {
             this.previous.date = this.next.date;
             this.previous.priceUSD = this.next.priceUSD;
@@ -93,7 +109,7 @@ class Crypto
         }
         else
         {
-            // It's been less than X time since I last logged on and had crypto updated, so nothing changes
+            // It's been less than "refresh_rate" milliseconds since I last logged on and had crypto updated, so nothing changes
         }
     }
 
@@ -105,24 +121,16 @@ class Crypto
 
         if (resp.data.records.length === 0)
         {
-            let first = {};
-            first.date = new Date();
-            first.priceUSD = this.current;
-            first.id = "1";
+            let new_time = new Date();
 
+            let first = new Log(new_time, this.current, "1");
             query.record = first;
-
             resp = await this.db.create.post("", query);
 
             console.log(resp);
             
-            let second = {};
-            second.date = new Date();
-            second.priceUSD = this.current;
-            second.id = "2";
-
+            let second = new Log(new_time, this.current, "2");
             query.record = second;
-
             resp = await this.db.create.post("", query);
 
             console.log(resp);
@@ -130,6 +138,27 @@ class Crypto
         else
         {
             console.log("Data already initialized!");
+        }
+    }
+
+    displayStart()
+    {
+        this.initializeButtons();
+
+        this.title_element.innerHTML = "Crypto";
+
+        this.content_element.innerHTML = "";
+    }
+
+    initializeButtons()
+    {
+        if (this.buttons_element.innerHTML === "")
+        {
+            console.log("Buttons will be added!");
+        }
+        else
+        {
+            console.log("Buttons are good!");
         }
     }
 }
