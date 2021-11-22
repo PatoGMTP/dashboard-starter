@@ -171,7 +171,7 @@ class Todo
     displayActiveTasks(target)
     {
         this.home = false;
-        
+
         let ol = target.querySelector("ol");
 
         if (ol)
@@ -185,12 +185,31 @@ class Todo
             ol.type = "1";
             target.appendChild(ol)
         }
-
-        let li;
+        
         for (let item of this.active_tasks)
         {
-            li = document.createElement("li");
-            li.innerHTML = item.text;
+            let li = document.createElement("li");
+
+            let left_button = document.createElement("button");
+            left_button.innerHTML = "Done";
+            left_button.style.display = "inline";
+            
+            let task_text = document.createElement("p");
+            task_text.innerHTML = item.text;
+            task_text.style.display = "inline";
+            
+            let right_button = document.createElement("button");
+            right_button.innerHTML = "Edit";
+            right_button.style.display = "inline";
+
+            let holder = document.createElement("div");
+
+            holder.appendChild(left_button);
+            holder.appendChild(task_text);
+            holder.appendChild(right_button);
+
+            li.appendChild(holder);
+
             li.id = item.id;
 
             ol.appendChild(li);
@@ -208,14 +227,23 @@ class Todo
 
         this.content_element.innerHTML = "";
 
-        let button_display = document.createElement("button");
-        button_display.innerHTML = "Todo List";
-        button_display.classList.add("showlist");
-        button_display.addEventListener("click", evt =>{
-            this.displayActiveTasks(this.content_element);
-        });
+        this.initializeHome();
 
-        this.content_element.appendChild(button_display);
+        this.content_element.appendChild(this.button_display);
+    }
+
+    initializeHome()
+    {
+        if (!this.button_display)
+        {
+            let button_display = document.createElement("button");
+            button_display.innerHTML = "Todo List";
+            button_display.classList.add("showlist");
+            button_display.addEventListener("click", evt =>{
+                this.displayActiveTasks(this.content_element);
+            });
+            this.button_display = button_display;
+        }
     }
 
     initializeButtons()

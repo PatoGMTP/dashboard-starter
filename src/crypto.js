@@ -141,20 +141,98 @@ class Crypto
         }
     }
 
+    displayCurrent()
+    {
+        this.home = false;
+        
+        this.form_previous.value = this.previous.priceUSD;
+        this.form_current.value = this.current;
+
+        this.content_element.appendChild(this.form);
+    }
+
     displayStart()
     {
+        this.home = true;
+
         this.initializeButtons();
 
         this.title_element.innerHTML = "Crypto";
 
         this.content_element.innerHTML = "";
+
+        this.initializeHome();
+
+        this.content_element.appendChild(this.button_display);
+
+        this.initializeForm();
+    }
+
+    initializeHome()
+    {
+        if (!this.button_display)
+        {
+            let button_display = document.createElement("button");
+            button_display.innerHTML = "Check Crypto";
+            button_display.classList.add("showcrypto");
+            button_display.addEventListener("click", evt =>{
+                this.displayCurrent();
+            });
+            this.button_display = button_display;
+        }
+    }
+
+    initializeForm()
+    {
+        if (!this.form)
+        {
+            let form = document.createElement("form");
+            let label_previous = document.createElement("label")
+            label_previous.innerHTML = "Previously:"
+            let form_previous = document.createElement("input");
+            form_previous.readOnly = true;
+
+            let label_current = document.createElement("label")
+            label_current.innerHTML = "Currently:"
+            let form_current = document.createElement("input");
+            form_current.readOnly = true;
+
+            label_previous.for = "previous";
+            form_previous.name = "previous";
+            form_previous.readOnly = true;
+
+            label_current.for = "current";
+            form_current.name = "current";
+            form_current.readOnly = true;
+
+            label_previous.style.display = "block";
+            label_current.style.display = "block";
+
+            form.appendChild(label_previous);
+            form.appendChild(form_previous);
+            form.appendChild(label_current);
+            form.appendChild(form_current);
+
+            this.form = form;
+            this.form_previous = form_previous;
+            this.form_current = form_current;
+        }
     }
 
     initializeButtons()
     {
         if (this.buttons_element.innerHTML === "")
         {
-            console.log("Buttons will be added!");
+            let button_exit = document.createElement("button");
+            button_exit.innerHTML = "Exit";
+            button_exit.classList.add("exit");
+            button_exit.addEventListener("click", evt =>{
+                if (!this.home) this.displayStart();
+                else console.log("Unfocus!");
+            });
+    
+            // this.parent_element.appendChild(title);
+            this.buttons_element.appendChild(button_exit);
         }
         else
         {

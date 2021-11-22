@@ -105,6 +105,7 @@ class Deals
     {
         let resp = await this.axios_CheapShark("deals");
         console.log(resp.data);
+        return resp.data;
     }
 
     searchDeals = async(text) =>
@@ -117,20 +118,58 @@ class Deals
         console.log(arr);
     }
 
+    displayBestDeals()
+    {
+        this.home = false;
+
+        this.content_element.innerHTML = "Loading..."
+        
+        this.getBestDeals().then(response => this.content_element.innerHTML = JSON.stringify(response));
+    }
+
     displayStart()
     {
+        this.home = true;
+
         this.initializeButtons();
 
         this.title_element.innerHTML = "Deals";
 
         this.content_element.innerHTML = "";
+
+        this.initializeHome();
+
+        this.content_element.appendChild(this.button_display);
+    }
+
+    initializeHome()
+    {
+        if (!this.button_display)
+        {
+            let button_display = document.createElement("button");
+            button_display.innerHTML = "Best Deals";
+            button_display.classList.add("showdeals");
+            button_display.addEventListener("click", evt =>{
+                this.displayBestDeals();
+            });
+            this.button_display = button_display;
+        }
     }
 
     initializeButtons()
     {
         if (this.buttons_element.innerHTML === "")
         {
-            console.log("Buttons will be added!");
+            let button_exit = document.createElement("button");
+            button_exit.innerHTML = "Exit";
+            button_exit.classList.add("exit");
+            button_exit.addEventListener("click", evt =>{
+                if (!this.home) this.displayStart();
+                else console.log("Unfocus!");
+            });
+    
+            // this.parent_element.appendChild(title);
+            this.buttons_element.appendChild(button_exit);
         }
         else
         {

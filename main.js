@@ -70,6 +70,6 @@ crypto.displayStart();
 // let temp = todo.active_tasks;
 // todo.completeTask(temp[0].id);
 
-await deals.getBestDeals();
-await deals.searchDeals("hades");
+// await deals.getBestDeals();
+// await deals.searchDeals("hades");
 deals.displayStart();
