@@ -194,9 +194,17 @@ class Todo
     {
         this.home = false;
 
+        if (this.active_tasks.length === 5)
+        {
+            this.button_new_task.hidden = true;
+        }
+        else
+        {
+            this.button_new_task.hidden = false;
+        }
+
         this.dropdown.hidden = true;
 
-        this.button_new_task.hidden = false;
 
         this.content_element.innerHTML = "";
         
@@ -257,6 +265,11 @@ class Todo
                 let parent = evt.target.parentElement;
                 this.completeTask(parent.id);
                 this.active_list.removeChild(parent.parentElement);
+
+                if (this.button_new_task.hidden)
+                {
+                    this.button_new_task.hidden = false;
+                }
             }
             else if (evt.target.innerHTML === "Save")
             {
@@ -293,6 +306,11 @@ class Todo
                 // console.log("Delete!", evt.target.previousElementSibling.value);
                 this.deleteTask(parent.id);
                 this.active_list.removeChild(parent.parentElement);
+
+                if (this.button_new_task.hidden)
+                {
+                    this.button_new_task.hidden = false;
+                }
             }
         });
 
@@ -506,6 +524,11 @@ class Todo
                     let newest_li = this.active_list.appendChild(this.instantiateActiveTask(newest));
                     newest_li.children[0].children[2].dispatchEvent(new Event("click"));
                     newest_li.children[0].children[1].focus();
+
+                    if (this.active_tasks.length === 5)
+                    {
+                        button_new_task.hidden = true;
+                    }
                 });
             });
 

@@ -108,4 +108,6 @@ async function startCryptoWidget(widget)
 
 // await deals.getBestDeals();
 // await deals.searchDeals("hades");
-deals.displayStart();
+deals.loadGames().then(evt => {
+    deals.displayStart();
+});

@@ -85,7 +85,9 @@ class Deals
         query.orderBy = "title";
 
         let resp = await this.db.read.post("", query);
+        console.log(resp);
         this.game_list = resp.data.records.map(item=> new Game(item));
+        console.log(this.game_list);
     }
 
     deleteGame = async(id) =>
@@ -125,6 +127,64 @@ class Deals
         });
     }
 
+    getCheapest = async(id) =>
+    {
+        let resp = await this.axios_CheapShark(`games?id=${id}`);
+        console.log(resp);
+        return [resp.data.deals[0].price, resp.data.deals[0].dealID, resp.data.cheapestPriceEver.price];
+    }
+
+    reloadDatalist()
+    {
+        let datalist = document.createElement("datalist");
+        datalist.id = "games";
+        this.game_list.forEach(item => {
+            let option = document.createElement("option");
+            option.value = item.title;
+            datalist.appendChild(option);
+        });
+        this.datalist = datalist;
+    }
+
+    instantiateTracker(item)
+    {
+        let game_title = document.createElement("p");
+        // game_title.value = item.title;
+        // game_title.readOnly = true;
+        game_title.innerHTML = item.title;
+        game_title.style.display = "inline";
+
+        let desired_price = document.createElement("input");
+        desired_price.value = item.desired_price;
+        desired_price.readOnly = true;
+        desired_price.style.display = "inline";
+
+        let cheapest = document.createElement("input");
+        this.getCheapest(item.id).then(arr => {
+            cheapest.value = arr[0];
+            cheapest.id = arr[1];
+            cheapest.readOnly = true;
+            cheapest.style.display = "inline";
+
+            // TODO: LET USER SET THIS!
+            desired_price.value = arr[2];
+        });
+
+        let holder = document.createElement("div");
+        holder.id = item.id;
+
+        holder.addEventListener("dblclick", evt => {
+            console.log(holder.id, cheapest.id);
+            window.open(`https://www.cheapshark.com/redirect?dealID=${cheapest.id}`, '_blank');
+        });
+
+        holder.appendChild(game_title);
+        holder.appendChild(desired_price);
+        holder.appendChild(cheapest);
+
+        return holder;
+    }
+
     instantiateSearchItem(item)
     {
         let game_title = document.createElement("input");
@@ -140,8 +200,13 @@ class Deals
             let name = holder.children[0].value;
             let id = holder.id;
             this.makeNewGame(name, id).then(resp => {
+                let newest = this.game_list.slice(-1)[0];
+                this.tracker_list.appendChild(this.instantiateTracker(newest));
+                this.content_element.innerHTML = "Successfully added game to trackers!";
+                setTimeout(item => {this.displayStart();}, 2000);
                 console.log(this.game_list);
             });
+            this.reloadDatalist();
         });
 
         holder.appendChild(game_title);
@@ -169,6 +234,17 @@ class Deals
         this.getBestDeals().then(response => this.content_element.innerHTML = JSON.stringify(response));
     }
 
+    displayTrackers()
+    {
+        this.home = false;
+
+        this.content_element.innerHTML = "";
+
+        console.log(this.tracker_list);
+
+        this.content_element.appendChild(this.tracker_list);
+    }
+
     displayStart()
     {
         this.home = true;
@@ -181,8 +257,9 @@ class Deals
 
         this.initializeHome();
 
-        this.content_element.appendChild(this.button_display);
+        // this.content_element.appendChild(this.button_display);
         this.content_element.appendChild(this.search_bar);
+        this.content_element.appendChild(this.button_mytrackers);
 
         this.initializeLists();
 
@@ -200,6 +277,19 @@ class Deals
                 this.displayBestDeals();
             });
             this.button_display = button_display;
+        }
+
+        if (!this.datalist) this.reloadDatalist();
+
+        if (!this.button_mytrackers)
+        {
+            let button_mytrackers = document.createElement("button");
+            button_mytrackers.innerHTML = "My Trackers";
+            button_mytrackers.classList.add("showtrackers");
+            button_mytrackers.addEventListener("click", evt =>{
+                this.displayTrackers();
+            });
+            this.button_mytrackers = button_mytrackers;
         }
 
         if (!this.search_bar)
@@ -327,6 +417,18 @@ class Deals
             // {
             //     this.active_list.appendChild(this.instantiateActiveTask(item));
             // }
+        }
+
+        if (!this.tracker_list)
+        {
+            console.log(this.game_list);
+            let tracker_list = document.createElement("ol");
+            tracker_list.type = "1";
+            this.tracker_list = tracker_list;
+            for (let item of this.game_list)
+            {
+                this.tracker_list.appendChild(this.instantiateTracker(item));
+            }
         }
 
         // if (this.historic_list.length === 0)
