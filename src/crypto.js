@@ -67,7 +67,7 @@ class Crypto
         let temp = resp.data.data.find(item=> item.id === 'bitcoin');
         console.log(temp);
         this.current = temp.priceUsd;
-        console.log(this.current);
+        return resp;
     }
 
     getPrevious = async() =>
@@ -100,12 +100,10 @@ class Crypto
             query.record = this.previous;
 
             let resp = await this.db.update.post("", query);
-            console.log("Previous has been updated:", resp);
 
             query.record = this.next;
 
             resp = await this.db.update.post("", query);
-            console.log("Next has been updated:", resp);
         }
         else
         {

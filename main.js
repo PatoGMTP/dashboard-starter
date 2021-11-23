@@ -39,12 +39,11 @@ todo.loadActiveTasks().then(evt => {
 
 // await reference.makeNewNote("Test", "TEXT!");
 reference.loadNotes().then(evt => {reference.displayStart();});
-console.log(reference.list);
 // reference.editNote(reference.list[0].id, "test2", "New");
 // reference.deleteNote(reference.list[0].id);
 // reference.displayStart();
 
-let resp = cryptoRetry(crypto);
+let resp = cryptoPing(crypto);
 
 if (resp === "Error")
 {
@@ -55,7 +54,7 @@ else
     startCryptoWidget(crypto);
 }
 
-async function cryptoRetry(widget)
+async function cryptoPing(widget)
 {
     let resp = null;
     let count = 0;
@@ -87,10 +86,14 @@ async function cryptoErrorHandler(widget)
     let error_string = "Error...";
     crypto.content_element.innerHTML = error_string;
 
-    while (crypto.content_element.innerHTML === error_string)
+    let resp = null;
+
+    while (resp === null)
     {
-        setTimeout(await cryptoRetry(widget), 1000);
+        setTimeout(async evt => {resp = await cryptoPing(widget);}, 1000);
     }
+
+    startCryptoWidget(widget);
 }
 
 async function startCryptoWidget(widget)

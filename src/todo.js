@@ -224,8 +224,6 @@ class Todo
 
     instantiateHistoricTask(item)
     {
-        console.log("Implement me!", item);
-        
         let task_text = document.createElement("input");
         task_text.value = item.text;
         task_text.readOnly = true;
@@ -408,8 +406,6 @@ class Todo
                 left_button.style.display = "inline";
 
                 if (count === 0) left_button.style.display = "none";
-
-                console.log(count, left_button);
         
                 left_button.addEventListener("click", evt => {
                     this.history_counter--;
