@@ -207,6 +207,8 @@ class Todo
     {
         this.content_element.innerHTML = "";
 
+        this.button_back.hidden = false;
+
         this.dropdown.hidden = true;
 
         let target = this.historic_tasks.find(item => item.id === id);
@@ -220,7 +222,7 @@ class Todo
         this.content_element.appendChild(this.form);
     }
 
-    displayHistoricTask(item)
+    instantiateHistoricTask(item)
     {
         console.log("Implement me!", item);
         
@@ -242,7 +244,7 @@ class Todo
         return holder;
     }
 
-    displayActiveTask(item)
+    instantiateActiveTask(item)
     {
         let li = document.createElement("li");
 
@@ -432,7 +434,7 @@ class Todo
 
                 this.historic_list.push(holder);
             }
-            this.historic_list[this.history_counter].children[1].appendChild(this.displayHistoricTask(item));
+            this.historic_list[this.history_counter].children[1].appendChild(this.instantiateHistoricTask(item));
             count++;
         }
 
@@ -448,7 +450,7 @@ class Todo
             this.active_list = list;
             for (let item of this.active_tasks)
             {
-                this.active_list.appendChild(this.displayActiveTask(item));
+                this.active_list.appendChild(this.instantiateActiveTask(item));
             }
         }
 
@@ -505,7 +507,7 @@ class Todo
             button_new_task.addEventListener("click", evt =>{
                 this.makeNewTask("").then(resp =>{
                     let newest = this.active_tasks.slice(-1)[0];
-                    let newest_li = this.active_list.appendChild(this.displayActiveTask(newest));
+                    let newest_li = this.active_list.appendChild(this.instantiateActiveTask(newest));
                     newest_li.children[0].children[2].dispatchEvent(new Event("click"));
                     newest_li.children[0].children[1].focus();
                 });
@@ -548,21 +550,33 @@ class Todo
             dropdown.appendChild(label)
             dropdown.appendChild(dropdown_options)
 
+            let button_back = document.createElement("button");
+            button_back.innerHTML = "Back";
+            button_back.classList.add("back");
+            button_back.addEventListener("click", evt => {
+                this.displayHistoricTasks();
+                this.button_back.hidden = true;
+            });
+
             this.button_new_task = button_new_task;
             this.button_new_task.hidden = true;
             this.dropdown = dropdown;
             this.dropdown.hidden = true;
+            this.button_back = button_back;
+            this.button_back.hidden = true;
     
             // this.parent_element.appendChild(title);
             this.buttons_element.appendChild(button_exit);
             this.buttons_element.appendChild(button_new_task);
             this.buttons_element.appendChild(dropdown);
+            this.buttons_element.appendChild(button_back);
         }
         else
         {
             console.log("Buttons are good!");
             this.button_new_task.hidden = true;
             this.dropdown.hidden = true;
+            this.button_back.hidden = true;
         }
     }
 }

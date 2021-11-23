@@ -25,47 +25,80 @@ const reference = new Reference(reference_div);
 
 console.log(todo, deals, crypto, reference);
 
-todo.checkRecords();
+// todo.checkRecords();
 // await todo.makeNewTask("TEST");
-await todo.loadActiveTasks();
-await todo.loadHistoricTasks();
+todo.loadActiveTasks().then(evt => {
+    todo.loadHistoricTasks().then(evt => {
+        todo.displayStart();
+    });
+});
 // await todo.editTask(todo.active_tasks[0].id, "Bye!");
-console.log(todo.active_tasks, todo.historic_tasks);
+// console.log(todo.active_tasks, todo.historic_tasks);
 // todo.displayActiveTasks(todo_div);
-todo.displayStart();
+// todo.displayStart();
 
 // await reference.makeNewNote("Test", "TEXT!");
-await reference.loadNotes();
+reference.loadNotes().then(evt => {reference.displayStart();});
 console.log(reference.list);
 // reference.editNote(reference.list[0].id, "test2", "New");
 // reference.deleteNote(reference.list[0].id);
-reference.displayStart();
+// reference.displayStart();
 
-let resp = null;
-let count = 0;
-while (resp === null)
+let resp = cryptoRetry(crypto);
+
+if (resp === "Error")
 {
-    if (count > 10)
+    cryptoErrorHandler(crypto);   
+}
+else
+{
+    startCryptoWidget(crypto);
+}
+
+async function cryptoRetry(widget)
+{
+    let resp = null;
+    let count = 0;
+    while (resp === null)
     {
-        console.log("Serious API Error!");
-        resp = undefined;
+        if (count > 10)
+        {
+            console.log("Serious API Error!");
+            resp = "Error";
+            break;
+        }
+        try
+        {
+            resp = await widget.getCurrent();
+        }
+        catch (error)
+        {
+            count++;
+            console.log("API failed, retrying");
+            // setTimeout(console.log("trying now..."), 1000);
+        }
     }
-    try
+    console.log("Number of times crypto API failed:", count);
+    return resp;
+}
+
+async function cryptoErrorHandler(widget)
+{
+    let error_string = "Error...";
+    crypto.content_element.innerHTML = error_string;
+
+    while (crypto.content_element.innerHTML === error_string)
     {
-        resp = await crypto.getCurrent();
-    }
-    catch (error)
-    {
-        count++;
-        console.log("API failed, retrying");
-        // setTimeout(console.log("trying now..."), 1000);
+        setTimeout(await cryptoRetry(widget), 1000);
     }
 }
-console.log("Number of times crypto API failed:", count);
 
-await crypto.firstTimeSetup();
-crypto.getPrevious();
-crypto.displayStart();
+async function startCryptoWidget(widget)
+{
+    await widget.firstTimeSetup();
+    widget.getPrevious();
+    return widget.displayStart();
+}
 
 // let temp = todo.active_tasks;
 // todo.completeTask(temp[0].id);
