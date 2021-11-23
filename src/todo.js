@@ -123,7 +123,7 @@ class Todo
     {
         let query = {};
         query.table = this.tablename;
-        query.orderBy = "date_created";
+        query.orderBy = "date_edited";
         query.query = "status != 0";
 
         let resp = await this.db.read.post("", query);
@@ -216,6 +216,12 @@ class Todo
         this.content_element.appendChild(this.active_list);
     }
 
+    displayHistoricTask(item)
+    {
+        console.log("Implement me!", item);
+        return document.createElement("div");
+    }
+
     displayActiveTask(item)
     {
         let li = document.createElement("li");
@@ -296,7 +302,8 @@ class Todo
 
         this.initializeHome();
 
-        this.content_element.appendChild(this.button_display);
+        this.content_element.appendChild(this.button_active);
+        this.content_element.appendChild(this.button_history);
 
         this.initializeLists();
     }
@@ -320,15 +327,15 @@ class Todo
 
     initializeHome()
     {
-        if (!this.button_display)
+        if (!this.button_active)
         {
-            let button_display = document.createElement("button");
-            button_display.innerHTML = "Todo List";
-            button_display.classList.add("showactive");
-            button_display.addEventListener("click", evt =>{
+            let button_active = document.createElement("button");
+            button_active.innerHTML = "Todo List";
+            button_active.classList.add("showactive");
+            button_active.addEventListener("click", evt =>{
                 this.displayActiveTasks();
             });
-            this.button_display = button_display;
+            this.button_active = button_active;
         }
 
         if (!this.button_history)
