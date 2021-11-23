@@ -48,8 +48,10 @@ class Todo
     db;
 
     active_tasks;
-
     historic_tasks;
+
+    active_list;
+    historic_list;
 
     tablename = "todo";
 
@@ -161,25 +163,49 @@ class Todo
 
         let query = {}
         query.table = this.tablename;
-        query.id = target.id;
+        query.record = target;
 
-        let resp = await this.db.delete.post("", query);
+        let resp = await this.db.update.post("", query);
 
         this.active_tasks = this.active_tasks.filter(item=> item !== target);
+    }
+
+    displayHistoricTasks()
+    {
+        this.home = false;
+
+        this.button_new_task.hidden = true;
+
+        this.content_element.innerHTML = "";
+
+        if (this.historic_list.innerHTML === "")
+        {
+            for (let item of this.historic_tasks)
+            {
+                this.historic_list.appendChild(this.displayHistoricTask(item));
+            }
+        }
+        else
+        {
+            console.log("Reusing history!");
+        }
+        
+        this.content_element.appendChild(this.historic_list);
     }
 
     displayActiveTasks()
     {
         this.home = false;
-        
+
+        this.button_new_task.hidden = false;
 
         this.content_element.innerHTML = "";
         
-        if (this.list.innerHTML === "")
+        if (this.active_list.innerHTML === "")
         {
             for (let item of this.active_tasks)
             {
-                this.list.appendChild(this.displayTask(item));
+                this.active_list.appendChild(this.displayActiveTask(item));
             }
         }
         else
@@ -187,10 +213,10 @@ class Todo
             console.log("Reusing content!");
         }
         
-        this.content_element.appendChild(this.list)
+        this.content_element.appendChild(this.active_list);
     }
 
-    displayTask(item)
+    displayActiveTask(item)
     {
         let li = document.createElement("li");
 
@@ -202,6 +228,9 @@ class Todo
             if (evt.target.innerHTML === "Done")
             {
                 console.log("Done!");
+                let parent = evt.target.parentElement;
+                this.completeTask(parent.id);
+                this.active_list.removeChild(parent.parentElement);
             }
             else if (evt.target.innerHTML === "Save")
             {
@@ -237,7 +266,7 @@ class Todo
                 let parent = evt.target.parentElement;
                 // console.log("Delete!", evt.target.previousElementSibling.value);
                 this.deleteTask(parent.id);
-                this.list.removeChild(parent.parentElement);
+                this.active_list.removeChild(parent.parentElement);
             }
         });
 
@@ -269,16 +298,23 @@ class Todo
 
         this.content_element.appendChild(this.button_display);
 
-        this.initializeList();
+        this.initializeLists();
     }
 
-    initializeList()
+    initializeLists()
     {
-        if (!this.list)
+        if (!this.active_list)
         {
             let list = document.createElement("ol");
             list.type = "1";
-            this.list = list;
+            this.active_list = list;
+        }
+
+        if (!this.historic_list)
+        {
+            let list = document.createElement("ol");
+            list.type = "1";
+            this.historic_list = list;
         }
     }
 
@@ -288,11 +324,22 @@ class Todo
         {
             let button_display = document.createElement("button");
             button_display.innerHTML = "Todo List";
-            button_display.classList.add("showlist");
+            button_display.classList.add("showactive");
             button_display.addEventListener("click", evt =>{
-                this.displayActiveTasks(this.content_element);
+                this.displayActiveTasks();
             });
             this.button_display = button_display;
+        }
+
+        if (!this.button_history)
+        {
+            let button_history = document.createElement("button");
+            button_history.innerHTML = "Task History";
+            button_history.classList.add("showhistory");
+            button_history.addEventListener("click", evt =>{
+                this.displayHistoricTasks();
+            });
+            this.button_history = button_history;
         }
     }
 
@@ -313,9 +360,15 @@ class Todo
             button_new_task.classList.add("newtask");
             button_new_task.addEventListener("click", evt =>{
                 this.makeNewTask("").then(resp =>{
-                    this.list.appendChild(this.displayTask(this.active_tasks.slice(-1)[0]));
+                    let newest = this.active_tasks.slice(-1)[0];
+                    let newest_li = this.active_list.appendChild(this.displayActiveTask(newest));
+                    newest_li.children[0].children[2].dispatchEvent(new Event("click"));
+                    newest_li.children[0].children[1].focus();
                 });
             });
+
+            this.button_new_task = button_new_task;
+            this.button_new_task.hidden = true;
     
             // this.parent_element.appendChild(title);
             this.buttons_element.appendChild(button_exit);
@@ -324,6 +377,7 @@ class Todo
         else
         {
             console.log("Buttons are good!");
+            this.button_new_task.hidden = true;
         }
     }
 }

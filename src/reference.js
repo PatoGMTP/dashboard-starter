@@ -111,6 +111,8 @@ class Reference
     {
         this.home = false;
 
+        this.content_element.innerHTML = "";
+
         this.form.id = note.id;
 
         this.form_title.readOnly = true;
@@ -127,6 +129,8 @@ class Reference
     displayFormForNew()
     {
         this.home = false;
+
+        this.content_element.innerHTML = "";
 
         this.form.reset();
         this.form_title.readOnly = false;

@@ -144,6 +144,8 @@ class Crypto
     displayCurrent()
     {
         this.home = false;
+
+        this.content_element.innerHTML = "";
         
         this.form_previous.value = this.previous.priceUSD;
         this.form_current.value = this.current;
