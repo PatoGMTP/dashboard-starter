@@ -137,7 +137,11 @@ class Deals
 
         holder.addEventListener("dblclick", evt => {
             console.log(holder.id);
-            this.displayHistoricDetails(holder.id);
+            let name = holder.children[0].value;
+            let id = holder.id;
+            this.makeNewGame(name, id).then(resp => {
+                console.log(this.game_list);
+            });
         });
 
         holder.appendChild(game_title);
@@ -217,58 +221,68 @@ class Deals
                     this.content_element.innerHTML = "Loading...";
     
                     let resp = await this.searchDeals(this.search_bar.children[0].value);
-    
-                    let temp = resp;
-    
-                    this.search_list = [];
-    
-                    let count = 0;
-                    this.search_counter = -1;
-                    for (let item of temp)
+
+                    if (resp.length === 0)
                     {
-                        if (count % 5 === 0)
-                        {
-                            this.search_counter++;
-    
-                            let holder = document.createElement("div");
-                            holder.id = this.search_counter;
-    
-                            let left_button = document.createElement("button");
-                            left_button.innerHTML = "Previous";
-                            left_button.style.display = "inline";
-    
-                            if (count === 0) left_button.style.display = "none";
-                    
-                            left_button.addEventListener("click", evt => {
-                                this.search_counter--;
-                                this.displaySearchResults();
-                            });
-                            
-                            let right_button = document.createElement("button");
-                            right_button.innerHTML = "Next";
-                            right_button.style.display = "inline";
-                    
-                            right_button.addEventListener("click", evt => {
-                                this.search_counter++;
-                                this.displaySearchResults();
-                            });
-    
-                            let list = document.createElement("ol");
-                            list.type = "1";
-    
-                            holder.appendChild(left_button);
-                            holder.appendChild(list);
-                            holder.appendChild(right_button);
-    
-                            this.search_list.push(holder);
-                        }
-                        this.search_list[this.search_counter].children[1].appendChild(this.instantiateSearchItem(item));
-                        count++;
+                        let thing = document.createElement("div");
+                        thing.innerHTML = "No Results found";
+                        this.search_list = [thing];
+                        this.search_counter = 0;
                     }
-    
-                    this.search_list[this.search_counter].children[2].style.display = "none";
-    
-                    this.search_counter = 0;
+                    else
+                    {
+                        let temp = resp;
+        
+                        this.search_list = [];
+        
+                        let count = 0;
+                        this.search_counter = -1;
+                        for (let item of temp)
+                        {
+                            if (count % 5 === 0)
+                            {
+                                this.search_counter++;
+        
+                                let holder = document.createElement("div");
+                                holder.id = this.search_counter;
+        
+                                let left_button = document.createElement("button");
+                                left_button.innerHTML = "Previous";
+                                left_button.style.display = "inline";
+        
+                                if (count === 0) left_button.style.display = "none";
+                        
+                                left_button.addEventListener("click", evt => {
+                                    this.search_counter--;
+                                    this.displaySearchResults();
+                                });
+                                
+                                let right_button = document.createElement("button");
+                                right_button.innerHTML = "Next";
+                                right_button.style.display = "inline";
+                        
+                                right_button.addEventListener("click", evt => {
+                                    this.search_counter++;
+                                    this.displaySearchResults();
+                                });
+        
+                                let list = document.createElement("ol");
+                                list.type = "1";
+        
+                                holder.appendChild(left_button);
+                                holder.appendChild(list);
+                                holder.appendChild(right_button);
+        
+                                this.search_list.push(holder);
+                            }
+                            this.search_list[this.search_counter].children[1].appendChild(this.instantiateSearchItem(item));
+                            count++;
+                        }
+        
+                        this.search_list[this.search_counter].children[2].style.display = "none";
+        
+                        this.search_counter = 0;
+                    }
                 }
 
                 this.displaySearchResults();
