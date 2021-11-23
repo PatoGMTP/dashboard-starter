@@ -218,7 +218,7 @@ class Reference
 
             let label_body = document.createElement("label")
             label_body.innerHTML = "Note Text:"
-            let form_body = document.createElement("input");
+            let form_body = document.createElement("textarea");
             form_body.readOnly = true;
 
             label_title.for = "title";
