@@ -4,6 +4,7 @@ import Todo from './src/todo.js';
 import Deals from './src/deals.js';
 import Crypto from './src/crypto.js';
 import Reference from './src/reference.js';
+import Sidebar from './src/sidebar.js';
 
 // let countdown = new Countdown(1,2);
 // countdown.render();
@@ -17,6 +18,7 @@ let todo_div = document.querySelector(".todo");
 let crypto_div = document.querySelector(".crypto");
 let reference_div = document.querySelector(".reference");
 let deals_div = document.querySelector(".deals");
+let side_div = document.querySelector(".sidebar");
 
 // todo_div.style.overflow = "scroll";
 // crypto_div.style.overflow = "scroll";
@@ -27,6 +29,9 @@ const todo = new Todo(todo_div);
 const deals = new Deals(deals_div);
 const crypto = new Crypto(crypto_div);
 const reference = new Reference(reference_div);
+const sidebar = new Sidebar(side_div);
+
+sidebar.displayStart();
 
 console.log(todo, deals, crypto, reference);
 
@@ -48,24 +53,68 @@ reference.loadNotes().then(evt => {reference.displayStart();});
 // reference.deleteNote(reference.list[0].id);
 // reference.displayStart();
 
-let resp = cryptoPing(crypto);
+// let temp = todo.active_tasks;
+// todo.completeTask(temp[0].id);
 
-if (resp === "Error")
+// await deals.getBestDeals();
+// await deals.searchDeals("hades");
+deals.loadGames().then(evt => {
+    deals.displayStart();
+});
+
+await crypto.firstTimeSetup();
+await crypto.getPrevious();
+
+let val = true;
+
+await crypto5SecLoop(true);
+
+// console.log(crypto.current);
+
+setInterval(() => {
+    crypto5SecLoop(val).then(evt => {crypto.updateForm();});
+}, 5000);
+
+async function crypto5SecLoop(input)
 {
-    cryptoErrorHandler(crypto);   
-}
-else
-{
-    startCryptoWidget(crypto);
+    let resp = await cryptoPing(crypto, crypto.getCurrent);
+
+    // console.log(resp);
+    
+    if (resp === "Error")
+    {
+        cryptoErrorHandler(crypto, crypto.getCurrent, input);   
+    }
+    else
+    {
+        startCryptoWidget(crypto, input);
+    }
 }
 
-async function cryptoPing(widget)
+await crypto1MinLoop();
+
+setInterval(() => {
+    crypto1MinLoop().then(evt => {crypto.renderPlot();});
+}, 60000);
+
+async function crypto1MinLoop()
+{
+    let resp = await cryptoPing(crypto, crypto.getHistory);
+    
+    if (resp === "Error")
+    {
+        cryptoErrorHandler(crypto, crypto.getHistory, false);   
+    }
+}
+
+
+async function cryptoPing(widget, func)
 {
     let resp = null;
     let count = 0;
     while (resp === null)
     {
-        if (count > 10)
+        if (count > 20)
         {
             console.log("Serious API Error!");
             resp = "Error";
@@ -73,8 +122,7 @@ async function cryptoPing(widget)
         }
         try
         {
-            resp = await widget.getCurrent();
-            resp = await widget.getHistory();
+            resp = await func();
         }
         catch (error)
         {
@@ -87,7 +135,7 @@ async function cryptoPing(widget)
     return resp;
 }
 
-async function cryptoErrorHandler(widget)
+async function cryptoErrorHandler(widget, func, input)
 {
     let error_string = "Error...";
     crypto.content_element.innerHTML = error_string;
@@ -96,24 +144,18 @@ async function cryptoErrorHandler(widget)
 
     while (resp === null)
     {
-        setTimeout(async evt => {resp = await cryptoPing(widget);}, 1000);
+        setTimeout(async evt => {resp = await cryptoPing(widget, func);}, 100);
     }
 
-    startCryptoWidget(widget);
+    startCryptoWidget(widget, input);
 }
 
-async function startCryptoWidget(widget)
+async function startCryptoWidget(widget, input)
 {
-    await widget.firstTimeSetup();
-    widget.getPrevious();
-    return widget.displayStart();
+    // console.log(input);
+    if (input)
+    {
+        val = false;
+        return widget.displayStart();
+    }
 }
-
-// let temp = todo.active_tasks;
-// todo.completeTask(temp[0].id);
-
-// await deals.getBestDeals();
-// await deals.searchDeals("hades");
-deals.loadGames().then(evt => {
-    deals.displayStart();
-});

@@ -41,6 +41,12 @@ class Task
         this.status = 1;
         this.date_edited = new Date();
     }
+
+    convertDates()
+    {
+        this.date_created = new Date(this.date_created);
+        this.date_edited = new Date(this.date_edited);
+    }
 }
 
 class Todo
@@ -129,6 +135,9 @@ class Todo
 
         let resp = await this.db.read.post("", query);
         this.historic_tasks = resp.data.records.map(item=> new Task(item));
+        this.historic_tasks.forEach(item => {
+            item.convertDates();
+        });
     }
 
     editTask = async(id, text) =>
@@ -223,21 +232,25 @@ class Todo
 
         this.form_title.value = target.text;
 
-        let string = `${target.status === 1 ? "Completed" : "Deleted" }\nLast edited on: ${target.date_edited}\nCreated on: ${target.date_created}`;
+        let string = `${target.status === 1 ? "Completed" : "Deleted" }\nLast edited on:\n${target.date_edited.toString()}\nCreated on:\n${target.date_created.toString()}`;
 
         this.form_body.value = string;
 
         this.content_element.appendChild(this.form);
     }
 
-    instantiateHistoricTask(item)
+    instantiateHistoricTask(item, num)
     {
+        let td = document.createElement("td");
+
         let task_text = document.createElement("input");
-        task_text.value = item.text;
+        task_text.value = `${num+1}. ${item.text}`;
         task_text.readOnly = true;
         task_text.style.display = "inline";
 
-        let holder = document.createElement("div");
+        td.appendChild(task_text);
+
+        let holder = document.createElement("tr");
         holder.id = item.id;
 
         holder.addEventListener("dblclick", evt => {
@@ -245,18 +258,23 @@ class Todo
             this.displayHistoricDetails(holder.id);
         });
 
+        let dummy1 = document.createElement("td");
+        let dummy2 = document.createElement("td");
+
+        holder.appendChild(dummy1);
         holder.appendChild(task_text);
+        holder.appendChild(dummy2);
 
         return holder;
     }
 
     instantiateActiveTask(item)
     {
-        let li = document.createElement("li");
+        // let li = document.createElement("li");
 
-        let left_button = document.createElement("button");
+        let left_button = document.createElement("td");
         left_button.innerHTML = "Done";
-        left_button.style.display = "inline";
+        // left_button.style.display = "inline";
 
         left_button.addEventListener("click", evt => {
             if (evt.target.innerHTML === "Done")
@@ -264,7 +282,7 @@ class Todo
                 console.log("Done!");
                 let parent = evt.target.parentElement;
                 this.completeTask(parent.id);
-                this.active_list.removeChild(parent.parentElement);
+                this.active_list.removeChild(parent);
 
                 if (this.button_new_task.hidden)
                 {
@@ -276,28 +294,31 @@ class Todo
                 console.log("Save!");
                 let parent = evt.target.parentElement;
                 parent.children[0].innerHTML = "Done";
-                parent.children[1].readOnly = true;
+                parent.children[1].children[0].readOnly = true;
                 parent.children[2].innerHTML = "Edit";
 
-                this.editTask(parent.id, parent.children[1].value)
+                this.editTask(parent.id, parent.children[1].children[0].value)
             }
         });
-        
+        let td = document.createElement("td");
+
         let task_text = document.createElement("input");
         task_text.value = item.text;
         task_text.readOnly = true;
         task_text.style.display = "inline";
+
+        td.appendChild(task_text);
         
-        let right_button = document.createElement("button");
+        let right_button = document.createElement("td");
         right_button.innerHTML = "Edit";
-        right_button.style.display = "inline";
+        // right_button.style.display = "inline";
 
         right_button.addEventListener("click", evt => {
             if (evt.target.innerHTML === "Edit")
             {
                 let parent = evt.target.parentElement;
                 parent.children[0].innerHTML = "Save";
-                parent.children[1].readOnly = false;
+                parent.children[1].children[0].readOnly = false;
                 parent.children[2].innerHTML = "Delete";
             }
             else if (evt.target.innerHTML === "Delete")
@@ -305,7 +326,7 @@ class Todo
                 let parent = evt.target.parentElement;
                 // console.log("Delete!", evt.target.previousElementSibling.value);
                 this.deleteTask(parent.id);
-                this.active_list.removeChild(parent.parentElement);
+                this.active_list.removeChild(parent);
 
                 if (this.button_new_task.hidden)
                 {
@@ -314,18 +335,20 @@ class Todo
             }
         });
 
-        let holder = document.createElement("div");
+        let holder = document.createElement("tr");
         holder.id = item.id;
 
         holder.appendChild(left_button);
-        holder.appendChild(task_text);
+        holder.appendChild(td);
         holder.appendChild(right_button);
 
-        li.appendChild(holder);
+        return holder;
 
-        li.id = item.id;
+        // li.appendChild(holder);
 
-        return li;
+        // li.id = item.id;
+
+        // return li;
     }
 
     displayStart()
@@ -351,13 +374,16 @@ class Todo
     formMaker(title_label, body_label)
     {
         let form = document.createElement("form");
+        form.classList.add("taskdetails");
         let label_title = document.createElement("label");
         label_title.innerHTML = title_label;
+        label_title.classList.add("title");
         let form_title = document.createElement("input");
         form_title.readOnly = true;
 
         let label_body = document.createElement("label");
         label_body.innerHTML = body_label;
+        label_body.classList.add("title");
         let form_body = document.createElement("textarea");
         form_body.readOnly = true;
 
@@ -416,52 +442,90 @@ class Todo
             {
                 this.history_counter++;
 
-                let holder = document.createElement("div");
+                let holder = document.createElement("table");
+                holder.classList.add("historylist");
                 holder.id = this.history_counter;
 
-                let left_button = document.createElement("button");
-                left_button.innerHTML = "Previous";
-                left_button.style.display = "inline";
+                let th1 = document.createElement("th");
 
-                if (count === 0) left_button.style.display = "none";
-        
-                left_button.addEventListener("click", evt => {
-                    this.history_counter--;
-                    this.displayHistoricTasks();
-                });
-                
-                let right_button = document.createElement("button");
+                if (count !== 0)
+                {
+                    let left_button = document.createElement("span");
+                    left_button.innerHTML = "Previous";
+
+                    th1.addEventListener("click", evt => {
+                        this.history_counter--;
+                        this.displayHistoricTasks();
+                    });
+
+                    th1.appendChild(left_button);
+                }
+                else
+                {
+                    th1.innerHTML = "        ";
+                }
+
+
+                // if (count === 0) left_button.style.display = "none";
+
+                let th2 = document.createElement("th");
+
+                let right_button = document.createElement("span");
                 right_button.innerHTML = "Next";
-                right_button.style.display = "inline";
         
-                right_button.addEventListener("click", evt => {
-                    this.history_counter++;
-                    this.displayHistoricTasks();
+                this.th2_listener = th2.addEventListener("click", evt => {
+                    if (this.historic_list[this.history_counter+1])
+                    {
+                        this.history_counter++;
+                        this.displayHistoricTasks();
+                    }
                 });
 
-                let list = document.createElement("ol");
+                th2.appendChild(right_button);
+
+                let list = document.createElement("th");
+                list.innerHTML = "Task History";
                 // list.type = "1";
 
-                holder.appendChild(left_button);
-                holder.appendChild(list);
-                holder.appendChild(right_button);
+                let row = document.createElement("tr");
+
+                row.appendChild(th1);
+                row.appendChild(list);
+                row.appendChild(th2);
+
+                holder.appendChild(row);
 
                 this.historic_list.push(holder);
             }
-            this.historic_list[this.history_counter].children[1].appendChild(this.instantiateHistoricTask(item));
+            this.historic_list[this.history_counter].appendChild(this.instantiateHistoricTask(item, count));
             count++;
         }
 
-        this.historic_list[this.history_counter].children[2].style.display = "none";
+        // console.log(this.historic_list[this.history_counter]);
+
+        this.historic_list[this.history_counter].children[0].children[2].innerHTML = "    ";
     }
 
     initializeLists()
     {
         if (!this.active_list)
         {
-            let list = document.createElement("ol");
+            let list = document.createElement("table");
+            list.classList.add("active_tasks");
             // list.type = "1";
             this.active_list = list;
+
+            let holder = document.createElement("tr");
+            let h1 = document.createElement("th");
+            let h2 = document.createElement("th");
+            h2.innerHTML = "Active Tasks";
+            let h3 = document.createElement("th");
+            holder.appendChild(h1);
+            holder.appendChild(h2);
+            holder.appendChild(h3);
+
+            this.active_list.appendChild(holder);
+
             for (let item of this.active_tasks)
             {
                 this.active_list.appendChild(this.instantiateActiveTask(item));
@@ -522,8 +586,8 @@ class Todo
                 this.makeNewTask("").then(resp =>{
                     let newest = this.active_tasks.slice(-1)[0];
                     let newest_li = this.active_list.appendChild(this.instantiateActiveTask(newest));
-                    newest_li.children[0].children[2].dispatchEvent(new Event("click"));
-                    newest_li.children[0].children[1].focus();
+                    newest_li.children[2].dispatchEvent(new Event("click"));
+                    newest_li.children[1].children[0].focus();
 
                     if (this.active_tasks.length === 5)
                     {
@@ -544,6 +608,7 @@ class Todo
             let label = document.createElement("label");
             label.setAttribute("for", "filter");
             label.innerHTML = "Filter By:";
+            label.classList.add("title");
             let dropdown_options = document.createElement("select");
             dropdown_options.name = "filter";
             let option_all = document.createElement("option");

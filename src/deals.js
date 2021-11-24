@@ -85,9 +85,9 @@ class Deals
         query.orderBy = "title";
 
         let resp = await this.db.read.post("", query);
-        console.log(resp);
+        // console.log(resp);
         this.game_list = resp.data.records.map(item=> new Game(item));
-        console.log(this.game_list);
+        // console.log(this.game_list);
     }
 
     deleteGame = async(id) =>
@@ -130,7 +130,7 @@ class Deals
     getCheapest = async(id) =>
     {
         let resp = await this.axios_CheapShark(`games?id=${id}`);
-        console.log(resp);
+        // console.log(resp);
         return [resp.data.deals[0].price, resp.data.deals[0].dealID, resp.data.cheapestPriceEver.price];
     }
 
@@ -216,7 +216,7 @@ class Deals
             let name = holder.children[0].value;
             let id = holder.id;
             this.makeNewGame(name, id).then(resp => {
-                this.content_element.innerHTML = "Successfully added game to trackers!";
+                this.content_element.innerHTML = '<span class="success-msg title">Successfully added game to trackers!!</span>';
                 setTimeout(item => {this.displayStart();}, 2000);
                 let newest = this.game_list.slice(-1)[0];
                 this.tracker_list.appendChild(this.instantiateTracker(newest));
@@ -439,7 +439,7 @@ class Deals
 
         if (!this.tracker_list)
         {
-            console.log(this.game_list);
+            // console.log(this.game_list);
             let tracker_list = document.createElement("table");
             // tracker_list.type = "1";
             this.tracker_list = tracker_list;

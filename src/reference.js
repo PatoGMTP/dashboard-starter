@@ -216,13 +216,16 @@ class Reference
         if (!this.form)
         {
             let form = document.createElement("form");
+            form.classList.add("noteform");
             let label_title = document.createElement("label")
-            label_title.innerHTML = "Note Title:"
+            label_title.innerHTML = "Note Title:";
+            label_title.classList.add("title");
             let form_title = document.createElement("input");
             form_title.readOnly = true;
 
             let label_body = document.createElement("label")
             label_body.innerHTML = "Note Text:"
+            label_body.classList.add("title");
             let form_body = document.createElement("textarea");
             form_body.readOnly = true;
 
@@ -318,7 +321,7 @@ class Reference
             else
             {
                 this.editNote(this.form.id, this.form_title.value, this.form_body.value);
-                this.content_element.innerHTML = "Success!";
+                this.content_element.innerHTML = '<span class="success-msg title">Success!</span>';
                 this.form.reset();
                 setTimeout(() => {this.displayStart();}, 1000);
             }
@@ -326,7 +329,7 @@ class Reference
         else if (action === "delete")
         {
             this.deleteNote(this.form.id);
-            this.content_element.innerHTML = "Success!";
+            this.content_element.innerHTML = '<span class="success-msg title">Success!</span>';
             this.form.reset();
             setTimeout(() => {this.displayStart();}, 1000);
         }
