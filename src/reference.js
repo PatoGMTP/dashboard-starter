@@ -155,8 +155,6 @@ class Reference
         this.initializeHome();
 
         this.content_element.appendChild(this.search_bar);
-        this.content_element.appendChild(this.datalist);
-        this.content_element.appendChild(this.button_search);
         this.content_element.appendChild(this.button_add);
 
         this.initializeForm();
@@ -166,21 +164,21 @@ class Reference
     {
         if (!this.search_bar)
         {
-            let search_bar = document.createElement("input");
-            search_bar.placeholder = "Type here!"
-            search_bar.setAttribute("list", "notes");
-            this.search_bar = search_bar;
-        }
+            let search_bar = document.createElement("div");
 
-        if (!this.datalist) this.reloadDatalist();
+            let search_field = document.createElement("input");
+            search_field.placeholder = "Type here!"
+            search_field.setAttribute("list", "notes");
 
-        if (!this.button_search)
-        {
+            this.search_field = search_field;
+
+            this.reloadDatalist();
+
             let button_search = document.createElement("button");
             button_search.innerHTML = "Go";
             button_search.classList.add("shownote");
             button_search.addEventListener("click", evt =>{
-                let target = this.list.find(item => item.title === this.search_bar.value);
+                let target = this.list.find(item => item.title === this.search_field.value);
                 if (target)
                 {
                     this.displayNote(target);
@@ -189,9 +187,16 @@ class Reference
                 {
                     console.log("Not in list!");
                 }
-                this.search_bar.value = "";
+                this.search_field.value = "";
             });
+
             this.button_search = button_search;
+
+            search_bar.appendChild(this.search_field);
+            search_bar.appendChild(this.datalist);
+            search_bar.appendChild(this.button_search);
+
+            this.search_bar = search_bar;
         }
 
         if (!this.button_add)

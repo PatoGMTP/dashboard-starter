@@ -18,6 +18,11 @@ let crypto_div = document.querySelector(".crypto");
 let reference_div = document.querySelector(".reference");
 let deals_div = document.querySelector(".deals");
 
+// todo_div.style.overflow = "scroll";
+// crypto_div.style.overflow = "scroll";
+// reference_div.style.overflow = "scroll";
+// deals_div.style.overflow = "scroll";
+
 const todo = new Todo(todo_div);
 const deals = new Deals(deals_div);
 const crypto = new Crypto(crypto_div);
@@ -69,6 +74,7 @@ async function cryptoPing(widget)
         try
         {
             resp = await widget.getCurrent();
+            resp = await widget.getHistory();
         }
         catch (error)
         {

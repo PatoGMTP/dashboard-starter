@@ -440,7 +440,7 @@ class Todo
                 });
 
                 let list = document.createElement("ol");
-                list.type = "1";
+                // list.type = "1";
 
                 holder.appendChild(left_button);
                 holder.appendChild(list);
@@ -460,7 +460,7 @@ class Todo
         if (!this.active_list)
         {
             let list = document.createElement("ol");
-            list.type = "1";
+            // list.type = "1";
             this.active_list = list;
             for (let item of this.active_tasks)
             {

@@ -148,39 +148,55 @@ class Deals
 
     instantiateTracker(item)
     {
-        let game_title = document.createElement("p");
+        let game_title = document.createElement("td");
         // game_title.value = item.title;
         // game_title.readOnly = true;
         game_title.innerHTML = item.title;
-        game_title.style.display = "inline";
+        // game_title.style.display = "inline";
 
-        let desired_price = document.createElement("input");
-        desired_price.value = item.desired_price;
-        desired_price.readOnly = true;
-        desired_price.style.display = "inline";
+        let desired_price = document.createElement("td");
+        // desired_price.value = item.desired_price;
+        // desired_price.readOnly = true;
+        // desired_price.style.display = "inline";
 
-        let cheapest = document.createElement("input");
+        let cheapest = document.createElement("td");
         this.getCheapest(item.id).then(arr => {
-            cheapest.value = arr[0];
+            // cheapest.value = arr[0];
             cheapest.id = arr[1];
-            cheapest.readOnly = true;
-            cheapest.style.display = "inline";
+            // cheapest.readOnly = true;
+            // cheapest.style.display = "inline";
+            cheapest.innerHTML = arr[0];
 
             // TODO: LET USER SET THIS!
-            desired_price.value = arr[2];
+            // desired_price.value = arr[2];
+            desired_price.innerHTML = arr[2];
         });
 
-        let holder = document.createElement("div");
+        let holder = document.createElement("tr");
         holder.id = item.id;
 
-        holder.addEventListener("dblclick", evt => {
+        cheapest.addEventListener("dblclick", evt => {
             console.log(holder.id, cheapest.id);
             window.open(`https://www.cheapshark.com/redirect?dealID=${cheapest.id}`, '_blank');
         });
 
+        let td = document.createElement("td");
+
+        let button_delete = document.createElement("span");
+        button_delete.innerHTML = "Delete";
+
+        td.addEventListener("dblclick", evt => {
+            this.deleteGame(holder.id);
+            let parent = td.parentElement;
+            this.tracker_list.removeChild(parent);
+        });
+
+        td.appendChild(button_delete);
+
         holder.appendChild(game_title);
         holder.appendChild(desired_price);
         holder.appendChild(cheapest);
+        holder.appendChild(td);
 
         return holder;
     }
@@ -200,12 +216,13 @@ class Deals
             let name = holder.children[0].value;
             let id = holder.id;
             this.makeNewGame(name, id).then(resp => {
-                let newest = this.game_list.slice(-1)[0];
-                this.tracker_list.appendChild(this.instantiateTracker(newest));
                 this.content_element.innerHTML = "Successfully added game to trackers!";
                 setTimeout(item => {this.displayStart();}, 2000);
+                let newest = this.game_list.slice(-1)[0];
+                this.tracker_list.appendChild(this.instantiateTracker(newest));
                 console.log(this.game_list);
             });
+            this.content_element.innerHTML = "";
             this.reloadDatalist();
         });
 
@@ -240,7 +257,7 @@ class Deals
 
         this.content_element.innerHTML = "";
 
-        console.log(this.tracker_list);
+        // console.log(this.tracker_list);
 
         this.content_element.appendChild(this.tracker_list);
     }
@@ -299,6 +316,7 @@ class Deals
 
             let search_input = document.createElement("input");
             search_input.placeholder = "Enter Game Name";
+            search_input.type = "search";
 
             let search_button = document.createElement("button");
             search_button.innerHTML = "Search!";
@@ -357,7 +375,7 @@ class Deals
                                 });
         
                                 let list = document.createElement("ol");
-                                list.type = "1";
+                                // list.type = "1";
         
                                 holder.appendChild(left_button);
                                 holder.appendChild(list);
@@ -411,7 +429,7 @@ class Deals
         if (!this.search_list)
         {
             let list = document.createElement("ol");
-            list.type = "1";
+            // list.type = "1";
             this.search_list = list;
             // for (let item of this.active_tasks)
             // {
@@ -422,9 +440,26 @@ class Deals
         if (!this.tracker_list)
         {
             console.log(this.game_list);
-            let tracker_list = document.createElement("ol");
-            tracker_list.type = "1";
+            let tracker_list = document.createElement("table");
+            // tracker_list.type = "1";
             this.tracker_list = tracker_list;
+
+            let holder = document.createElement("tr");
+            let h1 = document.createElement("th");
+            h1.innerHTML = "Game Title";
+            let h2 = document.createElement("th");
+            h2.innerHTML = "Ideal $";
+            let h3 = document.createElement("th");
+            h3.innerHTML = "Best Deal";
+            let h4 = document.createElement("th");
+            h4.innerHTML = "Action";
+            holder.appendChild(h1);
+            holder.appendChild(h2);
+            holder.appendChild(h3);
+            holder.appendChild(h4);
+
+            this.tracker_list.appendChild(holder);
+
             for (let item of this.game_list)
             {
                 this.tracker_list.appendChild(this.instantiateTracker(item));

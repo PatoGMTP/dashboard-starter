@@ -61,11 +61,19 @@ class Crypto
         this.content_element = this.parent_element.querySelector(".content")
     }
 
+    getHistory = async() =>
+    {
+        let resp = await this.axios_CoinCap("/bitcoin/history?interval=m1");
+        this.bitcoin_history_arr = resp.data.data;
+    }
+
     getCurrent = async() =>
     {
-        let resp = await this.axios_CoinCap();
-        let temp = resp.data.data.find(item=> item.id === 'bitcoin');
-        console.log(temp);
+        let resp = await this.axios_CoinCap("/bitcoin");
+        // let temp = resp.data.data.find(item=> item.id === 'bitcoin');
+        let temp = resp.data.data;
+        // console.log(temp);
+        this.bitcoin_live = temp;
         this.current = temp.priceUsd;
         return resp;
     }
@@ -148,7 +156,60 @@ class Crypto
         this.form_previous.value = this.previous.priceUSD;
         this.form_current.value = this.current;
 
-        this.content_element.appendChild(this.form);
+        // this.content_element.appendChild(this.form);
+
+        let div = document.createElement("div");
+
+        let x_data = [];
+        let y_data = [];
+
+        for (let i = 0; i < 5; i++)
+        {
+            x_data.push(-4+i);
+            y_data.push(this.bitcoin_history_arr[i].priceUsd)
+        }
+
+        console.log(this.bitcoin_history_arr[0]);
+
+        let trace1 = {
+            type: 'scatter',
+            x: x_data,
+            y: y_data,
+            mode: 'lines',
+            name: 'Red',
+            line: {
+              color: 'rgb(219, 64, 82)',
+              width: 3
+            }
+          };
+          
+        let layout = {
+            title: 'Line and Scatter Styling',
+            width: 280,
+            height: 255,
+            showlegend: false,
+            margin: {
+              l: 55,
+              r: 10,
+              b: 25,
+              t: 30,
+              pad: 4
+            },
+        };
+
+        // let config = {responsive: true}
+
+        let config = {staticPlot: true}
+          
+        let data = [trace1];
+          
+        Plotly.newPlot(div, data, layout, config);
+
+        div.id = "plot";
+
+        // div.children[0].children[0].style = "";
+          
+        this.content_element.appendChild(div);
     }
 
     displayStart()
