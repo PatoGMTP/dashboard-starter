@@ -305,7 +305,7 @@ class Reference
             else
             {
                 this.makeNewNote(this.form_title.value, this.form_body.value);
-                this.content_element.innerHTML = "Success!";
+                this.content_element.innerHTML = '<span class="success-msg title">Success!</span>';
                 this.form.reset();
                 setTimeout(() => {this.displayStart();}, 1000);
             }
@@ -349,6 +349,15 @@ class Reference
             datalist.appendChild(option);
         });
         this.datalist = datalist;
+
+        if (this.search_bar)
+        {
+            this.search_bar.innerHTML = "";
+    
+            this.search_bar.appendChild(this.search_field);
+            this.search_bar.appendChild(this.datalist);
+            this.search_bar.appendChild(this.button_search);
+        }
     }
 
     initializeButtons()
